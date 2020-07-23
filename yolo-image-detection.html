@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>YOLO Object Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- p5 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+
+    <!-- ml5 -->
+    <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+
+      const yolo = ml5.YOLO(modelReady); 
+      let img, objects = [], status;
+      const url = 'https://images.unsplash.com/photo-1501771924607-209f42a6e7e4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60'
+      function setup() {
+        loadImage(url, img => {
+          createCanvas(img["width"], img["height"]);
+        });
+
+        img = createImg(url, imageReady);
+        img.hide();
+        // createCanvas(640, 420);
+        // img.size(640, 420);
+
+      }
+      // Change the status when the model loads.
+      function modelReady() {
+        console.log("model Ready!")
+        status = true;
+      }
+      // When the image has been loaded, // get a prediction for that image
+      function imageReady() {
+        console.log('Detecting') 
+        yolo.detect(img, gotResult);
+      }
+      // A function to run when we get any errors and the results
+      function gotResult(err, results) {
+        if (err) {
+          console.log(err);
+        }
+        console.log(results)
+        objects = results;
+      }
+
+      function draw() {
+        // unless the model is loaded, do not draw anything to canvas
+        if (status != undefined) {
+          image(img, 0, 0)
+
+          for (let i = 0; i < objects.length; i++) {
+            noStroke();
+            fill(0, 255, 0);
+            text(objects[i].label + " " + nfc(objects[i].confidence * 100.0, 2) + "%", objects[i].x * width + 5, objects[i].y * height + 15);
+            noFill();
+            strokeWeight(4);
+            stroke(0, 255, 0);
+            rect(objects[i].x * width, objects[i].y * height, objects[i].w * width, objects[i].h * height);
+          }
+        }
+      }
+
+    </script>
+  </body>
+</html>
