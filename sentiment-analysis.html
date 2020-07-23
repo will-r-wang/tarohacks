@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Getting Started with ml5.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- p5 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+    <!-- ml5 -->
+    <script src="https://unpkg.com/ml5@0.4.3/dist/ml5.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let sentiment; let statusEl; let submitBtn; let inputBox; let sentimentResult;
+      function setup() {
+        noCanvas();
+        // initialize sentiment
+        sentiment = ml5.sentiment('movieReviews', modelReady);
+
+        // setup the html environment
+        statusEl = createP('Loading Model...');
+        inputBox = createInput('Today is the happiest day and is full of rainbows!');
+        inputBox.attribute('size', '75');
+        submitBtn = createButton('submit');
+        sentimentResult = createP('sentiment score:');
+
+        // predicting the sentiment on mousePressed()
+        submitBtn.mousePressed(getSentiment);
+      }
+      function getSentiment() {
+        // get the values from the input
+        const text = inputBox.value();
+
+        // make the prediction
+        const prediction = sentiment.predict(text);
+
+        // display sentiment result on html page
+        sentimentResult.html('Sentiment score: ' + prediction.score);
+      }
+      function modelReady() {
+        // model is ready
+        statusEl.html('model loaded');
+      }
+    </script>
+  </body>
+</html>
